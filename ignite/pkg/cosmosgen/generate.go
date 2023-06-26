@@ -2,6 +2,7 @@ package cosmosgen
 
 import (
 	"bytes"
+	"github.com/ignite/cli/ignite/pkg/buf"
 	"path/filepath"
 	"strings"
 
@@ -22,6 +23,18 @@ const (
 type ModulesInPath struct {
 	Path    string
 	Modules []module.Module
+}
+
+func (g *generator) bufLockPath() string {
+	return filepath.Join(g.appPath, g.protoDir, "buf.lock")
+}
+
+func (g *generator) bufLock() (buf.Deps, error) {
+	lock, err := buf.ParseBufLock(g.bufLockPath())
+	if err != nil {
+		return nil, err
+	}
+	return lock.Deps, nil
 }
 
 func (g *generator) setup() (err error) {

@@ -73,12 +73,18 @@ func (g *generator) generateOpenAPISpec() error {
 			return conf.AddSpec(strcase.ToCamel(m.Pkg.Name), specPath)
 		}
 
+		deps, err := g.bufLock()
+		if err != nil {
+			return err
+		}
+
 		hasAnySpecChanged = true
 		if err := g.buf.Generate(
 			g.ctx,
 			m.Pkg.Path,
 			dir,
 			g.openAPITemplate(),
+			deps.Dependencies()...,
 		); err != nil {
 			return err
 		}

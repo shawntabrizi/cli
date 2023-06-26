@@ -24,12 +24,18 @@ func (g *generator) generateGo() error {
 
 	protoPath := filepath.Join(g.appPath, g.protoDir)
 
+	deps, err := g.bufLock()
+	if err != nil {
+		return err
+	}
+
 	// code generate for each module.
 	if err := g.buf.Generate(
 		g.ctx,
 		protoPath,
 		tmp,
 		g.gogoTemplate(),
+		deps.Dependencies()...,
 	); err != nil {
 		return err
 	}
